@@ -2,12 +2,12 @@
 
 Access 400+ AI tools from your Python code. Chat, image generation, text to speech, translation, video, music, and more.
 
-**[Website](https://free.ai)** | **[API Docs](https://free.ai/api/)** | **[PyPI](https://pypi.org/project/freeai/)** | **[CLI Tool](https://github.com/freeaigit/free-code)**
+**[Website](https://free.ai)** | **[API Docs](https://free.ai/api/)** | **[PyPI](https://pypi.org/project/free-dot-ai/)** | **[CLI Tool](https://github.com/freeaigit/free-code)**
 
 ## Install
 
 ```bash
-pip install freeai
+pip install free-dot-ai
 ```
 
 ## Quick Start
@@ -164,8 +164,8 @@ except RateLimitError:
 ## Free.ai Ecosystem
 
 - **[Free.ai](https://free.ai)** — 400+ free AI tools on the web
-- **[Python SDK](https://github.com/freeaigit/free-sdk)** — `pip install freeai` (you are here)
-- **[CLI Coder](https://github.com/freeaigit/free-code)** — `pip install freeai-code` — AI coding in your terminal
+- **[Python SDK](https://github.com/freeaigit/free-sdk)** — `pip install free-dot-ai` (you are here)
+- **[CLI Coder](https://github.com/freeaigit/free-code)** — `pip install free-dot-ai-code` — AI coding in your terminal
 - **[iOS App](https://github.com/nadermx/free-ios)** — Native iPhone/iPad app
 - **[Android App](https://github.com/nadermx/free-android)** — Native Android app
 - **[API Docs](https://free.ai/api/)** — Full API reference
