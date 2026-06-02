@@ -135,7 +135,7 @@ ai.chat("Hello", model="meta-llama/llama-3.3-70b")
 ai.chat("Hello", model="deepseek/deepseek-chat-v3")
 ```
 
-Full list: [free.ai/apps/](https://free.ai/apps/) or `ai.models()`
+Full list: [free.ai/models/](https://free.ai/models/) or `ai.models()`
 
 ## Pricing
 
