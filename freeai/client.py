@@ -32,21 +32,85 @@ _PROVIDER_URLS = {
 _DEFAULT_BASE_URL = "https://api.free.ai"
 
 
+#: Used only when the API sent no message of its own. Every one of these is
+#: worse than what the server would have said, which is the whole point of
+#: preferring the body.
+_FALLBACK_MESSAGES = {
+    401: "Invalid or missing API key",
+    402: "Insufficient tokens — buy more at https://free.ai/pricing/",
+    429: "Rate limit exceeded — wait or upgrade your plan",
+}
+
+
+def _parse_error_body(body_text: str):
+    """Pull (message, error_id, details) out of an API error body.
+
+    The API sends the message two ways and both are common::
+
+        {"error": "Premium models need purchased tokens. ...",
+         "error_id": "4e80277d"}
+
+        {"error": {"error": "Sign up free: 30,000 tokens/day to use this tool.",
+                   "requires_signup": true, "daily_remaining": 6000},
+         "error_id": "2a7bfa7c"}
+
+    The nested form carries the fields a caller can branch on, so it is
+    unwrapped rather than stringified -- the previous code would have rendered
+    it as ``API error 429: {'error': '...', 'requires_signup': True}``.
+    """
+    try:
+        body = json.loads(body_text)
+    except Exception:
+        text = (body_text or "").strip()
+        return (text or None), None, {}
+    if not isinstance(body, dict):
+        return (str(body).strip() or None), None, {}
+
+    error_id = body.get("error_id")
+    details = {k: v for k, v in body.items()
+               if k not in ("error", "detail", "message", "error_id")}
+
+    node = body.get("error", body.get("detail", body.get("message")))
+    if isinstance(node, dict):
+        details.update({k: v for k, v in node.items()
+                        if k not in ("error", "detail", "message", "error_id")})
+        error_id = error_id or node.get("error_id")
+        node = node.get("error", node.get("detail", node.get("message")))
+    if isinstance(node, list):  # FastAPI validation errors
+        parts = [str(d.get("msg", d)) if isinstance(d, dict) else str(d) for d in node]
+        node = "; ".join(p for p in parts if p)
+
+    msg = str(node).strip() if node is not None else None
+    return (msg or None), error_id, details
+
+
 def _handle_error(status_code: int, body_text: str):
-    """Raise the appropriate exception for an HTTP error status."""
-    if status_code == 401:
-        raise AuthenticationError("Invalid or missing API key", status_code=401)
-    if status_code == 402:
-        raise InsufficientCreditsError("Insufficient tokens — buy more at https://free.ai/pricing/", status_code=402)
-    if status_code == 429:
-        raise RateLimitError("Rate limit exceeded — wait or upgrade your plan", status_code=429)
-    if status_code >= 400:
-        try:
-            body = json.loads(body_text)
-            msg = body.get("error", body.get("detail", body_text))
-        except Exception:
-            msg = body_text
-        raise FreeAIError(f"API error {status_code}: {msg}", status_code=status_code)
+    """Raise the appropriate exception for an HTTP error status.
+
+    🔴 The API's own message is preferred over anything hardcoded here.
+
+    401, 402 and 429 used to be answered with a fixed sentence and the body
+    was thrown away, which is exactly backwards: those three carry the most
+    actionable text the API produces, and free.ai deliberately puts the whole
+    remedy in the message because the fields around it are not forwarded.
+    A 429 can mean the daily pool is spent (with the number), an unverified
+    account, a per-tool cap, a monthly API limit (with its reset date), or a
+    premium model on a free account -- and the SDK reported all of them as
+    "Rate limit exceeded — wait or upgrade your plan", which tells the caller
+    to do nothing useful and names none of the five.
+    """
+    if status_code < 400:
+        return
+    msg, error_id, details = _parse_error_body(body_text)
+    if not msg:
+        msg = _FALLBACK_MESSAGES.get(status_code) or f"API error {status_code}"
+
+    exc = {401: AuthenticationError,
+           402: InsufficientCreditsError,
+           429: RateLimitError}.get(status_code, FreeAIError)
+    if exc is FreeAIError and not msg.lower().startswith("api error"):
+        msg = f"API error {status_code}: {msg}"
+    raise exc(msg, status_code=status_code, error_id=error_id, details=details)
 
 
 def _build_headers(api_key: str, provider: str, content_type: str = "application/json") -> Dict[str, str]:

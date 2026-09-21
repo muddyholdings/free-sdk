@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "free-dot-ai"
-version = "0.2.0"
-description = "Free.ai Python SDK — access 400+ AI tools from your code"
+version = "0.3.0"
+description = "Free.ai Python SDK — access hundreds of AI tools from your code"
 readme = "README.md"
 license = {text = "MIT"}
 requires-python = ">=3.8"
@@ -34,8 +34,12 @@ async = ["httpx>=0.24.0"]
 [project.urls]
 Homepage = "https://free.ai"
 Documentation = "https://free.ai/api/"
-Repository = "https://github.com/freeaigit/free-sdk"
-Issues = "https://github.com/freeaigit/free-sdk/issues"
+# The freeaigit GitHub account is suspended (verified 2026-09-20: org and
+# every repo 404), so the old Repository/Issues URLs sent anyone clicking
+# through from PyPI to a dead page. Point at surfaces that resolve until the
+# account is restored.
+Issues = "https://free.ai/contact/"
+Changelog = "https://free.ai/changelog/"
 
 [tool.setuptools.packages.find]
 include = ["freeai*"]
