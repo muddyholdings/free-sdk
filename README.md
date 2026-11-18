@@ -2,7 +2,7 @@
 
 Access hundreds of AI tools from your Python code. Chat, image generation, text to speech, translation, video, music, and more.
 
-**[Website](https://free.ai)** | **[API Docs](https://free.ai/api/)** | **[PyPI](https://pypi.org/project/free-dot-ai/)** | **[CLI Tool](https://pypi.org/project/freeai-code/)**
+**[Website](https://free.ai)** | **[API Docs](https://free.ai/api/)** | **[PyPI](https://pypi.org/project/free-dot-ai/)** | **[CLI Tool](https://free.ai/code/cli/)**
 
 ## Install
 
@@ -167,7 +167,7 @@ except RateLimitError:
 
 - **[Free.ai](https://free.ai)** — hundreds of free AI tools on the web
 - **[Python SDK](https://pypi.org/project/free-dot-ai/)** — `pip install free-dot-ai` (you are here)
-- **[CLI Coder](https://pypi.org/project/freeai-code/)** — `pip install freeai-code` — AI coding in your terminal
+- **[free-code CLI](https://free.ai/code/cli/)**: AI coding agent for your terminal. Install with `curl -fsSL https://free.ai/install.sh | sh` (macOS/Linux) or `irm https://free.ai/install.ps1 | iex` (Windows). [Source](https://github.com/muddyholdings/free-code)
 - **[iOS App](https://free.ai/ios/)** — Native iPhone/iPad app
 - **[Android App](https://free.ai/android/)** — Native Android app
 - **[API Docs](https://free.ai/api/)** — Full API reference
